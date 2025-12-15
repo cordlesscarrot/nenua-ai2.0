@@ -13,9 +13,81 @@ const MenuIcon = () => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewB
 // Using a reliable CDN for a futuristic abstract logo
 const LOGO_URL = "https://i.ibb.co/9BfMpmj/Gemini-Generated-Image-tp54pltp54pltp54.png";
 
+// --- Formatted Text Component ---
+const FormattedText: React.FC<{ text: string }> = ({ text }) => {
+  if (!text) return null;
+
+  const lines = text.split('\n');
+
+  const renderInline = (lineContent: string) => {
+    // 1. Split by Bold (**...**)
+    const parts = lineContent.split(/(\*\*.*?\*\*)/g);
+    
+    return parts.map((part, i) => {
+      // Bold Text
+      if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
+        return <strong key={i} className="font-bold text-brand-secondary">{part.slice(2, -2)}</strong>;
+      }
+      
+      // 2. Split by Italic (*...*) inside non-bold parts
+      // We look for *text* but ensure we don't match standard asterisks in math if possible, 
+      // primarily targeting *word* structure.
+      const italicParts = part.split(/(\*[^*]+?\*)/g);
+      return (
+        <React.Fragment key={i}>
+          {italicParts.map((subPart, j) => {
+             if (subPart.startsWith('*') && subPart.endsWith('*') && subPart.length >= 3) {
+               return <em key={j} className="italic text-brand-accent">{subPart.slice(1, -1)}</em>;
+             }
+             return subPart;
+          })}
+        </React.Fragment>
+      );
+    });
+  };
+
+  return (
+    <div className="space-y-1 text-sm md:text-base leading-relaxed">
+      {lines.map((line, i) => {
+        const trimmed = line.trim();
+        
+        // Handle Bullet Points (lines starting with * or -)
+        if (trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
+          return (
+            <div key={i} className="flex items-start ml-2 space-x-2">
+               <span className="text-brand-primary mt-1.5 text-[10px]">●</span>
+               <span>{renderInline(trimmed.substring(2))}</span>
+            </div>
+          );
+        }
+
+        // Handle Numbered Lists (1. )
+        if (/^\d+\.\s/.test(trimmed)) {
+           const match = trimmed.match(/^(\d+)\.\s(.*)/);
+           if (match) {
+             return (
+               <div key={i} className="flex items-start ml-2 space-x-2">
+                 <span className="text-brand-primary font-bold text-xs mt-0.5">{match[1]}.</span>
+                 <span>{renderInline(match[2])}</span>
+               </div>
+             )
+           }
+        }
+
+        // Handle empty lines
+        if (!trimmed) {
+          return <div key={i} className="h-2" />;
+        }
+
+        // Standard Paragraph
+        return <p key={i}>{renderInline(line)}</p>;
+      })}
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   // --- State ---
-  // No user state needed anymore
   const [mode, setMode] = useState<AppMode>(AppMode.CHAT);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -150,9 +222,10 @@ const App: React.FC = () => {
           >
             Roast Camera
           </button>
+          {/* Hiding Smart Home Button on Desktop (lg) because it is redundant with the right panel */}
           <button 
              onClick={() => setMode(AppMode.DASHBOARD)}
-            className={`w-full text-left px-4 py-3 rounded-xl transition-all font-medium ${mode === AppMode.DASHBOARD ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/30' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
+            className={`w-full text-left px-4 py-3 rounded-xl transition-all font-medium lg:hidden ${mode === AppMode.DASHBOARD ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/30' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
           >
             Smart Home
           </button>
@@ -232,7 +305,7 @@ const App: React.FC = () => {
                           ? 'bg-brand-primary text-white rounded-br-none' 
                           : 'bg-brand-surface text-gray-200 rounded-bl-none border border-gray-700'}
                       `}>
-                        <div className="leading-relaxed whitespace-pre-wrap">{msg.text}</div>
+                        <FormattedText text={msg.text} />
                       </div>
                     </div>
                   ))}
