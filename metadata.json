@@ -1,0 +1,9 @@
+{
+  "name": "Neuna 2.0",
+  "description": "An advanced, Jarvis-inspired AI assistant with smart home integration, vision capabilities, and personalized interaction.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
