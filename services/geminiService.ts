@@ -3,7 +3,7 @@ import { GEMINI_MODEL_TEXT, SYSTEM_INSTRUCTION } from "../constants";
 
 // Initialize Gemini
 // Note: In a production environment, ensure API_KEY is set.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 // 1. Define Tools for Smart Home Control
 const setLightStateTool: FunctionDeclaration = {
@@ -33,8 +33,8 @@ const setThermostatTool: FunctionDeclaration = {
 
 const smartHomeTools: Tool[] = [
   { functionDeclarations: [setLightStateTool, setThermostatTool] },
-  // Adding Google Search for Information Retrieval
-  { googleSearch: {} }
+  // googleSearch cannot be used with other tools (like FunctionDeclaration), so it is removed to prevent API errors.
+  // { googleSearch: {} }
 ];
 
 export const sendMessageToNeuna = async (
@@ -44,7 +44,9 @@ export const sendMessageToNeuna = async (
   onToolCall?: (toolCall: any) => Promise<any>
 ) => {
   try {
-    const modelId = imagePart ? 'gemini-2.5-flash-image' : 'gemini-2.5-flash';
+    // gemini-2.5-flash supports both text and image input.
+    // gemini-2.5-flash-image is primarily for image generation.
+    const modelId = GEMINI_MODEL_TEXT;
     
     // Construct content parts
     const parts: any[] = [];
@@ -53,8 +55,8 @@ export const sendMessageToNeuna = async (
     }
     parts.push({ text: message });
 
-    // Config: Only attach tools if NOT using vision model, 
-    // as gemini-2.5-flash-image does not support function calling/tools in this context.
+    // Config: Only attach tools if NOT using vision model (unless specific models support it), 
+    // and ensuring no conflict.
     const config: any = {
       systemInstruction: SYSTEM_INSTRUCTION,
     };
