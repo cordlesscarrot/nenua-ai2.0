@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Neuna 2.0</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/9BfMpmj/Gemini-Generated-Image-tp54pltp54pltp54.png" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,6 +44,12 @@
       }
     </script>
     <style>
+      html, body, #root {
+        height: 100%;
+        overflow: hidden; /* Prevent global scroll */
+        margin: 0;
+        padding: 0;
+      }
       body {
         background-color: #0f172a;
         color: #f8fafc;
@@ -62,7 +68,7 @@
       }
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
-        width: 6px;
+        width: 4px;
       }
       ::-webkit-scrollbar-track {
         background: transparent; 
@@ -74,6 +80,10 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #64748b; 
       }
+      /* Mobile touch improvements */
+      button, input {
+        touch-action: manipulation;
+      }
     </style>
   <script type="importmap">
 {
@@ -83,7 +93,8 @@
     "react/": "https://esm.sh/react@^19.2.3/",
     "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
     "vite": "https://esm.sh/vite@^7.3.0",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "html-docx-js": "https://esm.sh/html-docx-js@^0.3.1"
   }
 }
 </script>

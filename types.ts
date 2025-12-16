@@ -1,3 +1,4 @@
+
 export enum MessageRole {
   USER = 'user',
   MODEL = 'model',
@@ -24,7 +25,8 @@ export interface SmartDevice {
 export enum AppMode {
   CHAT = 'CHAT',
   ROAST = 'ROAST',
-  DASHBOARD = 'DASHBOARD'
+  WEATHER = 'WEATHER',
+  NOTES = 'NOTES'
 }
 
 export interface UserSession {
